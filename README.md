@@ -34,6 +34,14 @@ url-shortener/
 ├── migrations/
 │   ├── versions/
 │   └── env.py
+├── tests/
+│   ├── test_short_code.py
+│   └── test_urls.py
+├── docs/
+│   ├── database-design.md
+│   ├── development-log.md
+│   ├── short-code-generation.md
+│   └── troubleshooting.md
 ├── alembic.ini
 ├── requirements.txt
 ├── README.md
@@ -139,10 +147,64 @@ The current implementation has been tested for:
 
 This project focuses on API engineering and database engineering. Additional capabilities should be introduced in separate phases rather than mixed into the current implementation.
 
+## Short-Code Design Decisions
 
+- **Strategy:** Random six-character codes using `secrets.choice()` and a Base62 alphabet (62 characters).
+- **Capacity:** \(62^6 = 56,800,235,584\) possible codes.
+- **Uniqueness:** PostgreSQL's `urls_short_code_key` constraint prevents duplicate codes.
+- **Collision handling:** Retry short-code collisions up to the configured limit; return HTTP 503 if all attempts fail.
+- **Trade-off:** Codes are compact and less predictable, but collisions remain possible as usage grows.
+- **Security:** Short codes are not a replacement for authentication or authorization.
 
+See [Short-Code Generation](docs/short-code-generation.md) for details and alternatives.
 
-├── docs/
-│   ├── database-design.md
-│   ├── development-log.md
-│   └── troubleshooting.md
+## Testing
+
+### Stack
+- pytest — test runner and assertions
+- FastAPI TestClient — API testing
+- PostgreSQL — database integration testing
+- unittest.mock — simulate database failures
+- ThreadPoolExecutor — concurrent request testing
+
+### Test structure
+
+tests/
+├── test_short_code.py  # Short-code generation unit tests
+└── test_urls.py        # API and database integration tests
+
+### Run tests
+
+Activate the project virtual environment, then run:
+
+```bash
+python -m pytest -v
+```
+
+Run a specific test file:
+
+```bash
+python -m pytest tests/test_short_code.py -v
+python -m pytest tests/test_urls.py -v
+```
+
+### Coverage
+
+The suite verifies:
+- Short-code length and allowed characters
+- URL validation and request parsing
+- URL creation and redirects
+- Unknown short-code handling
+- Collision retries and retry exhaustion
+- Database error propagation
+- Concurrent URL creation
+- Cleanup of test records
+
+### Test isolation
+
+API tests share one TestClient lifecycle to avoid reopening
+the same PostgreSQL connection pool. Test-created records
+are cleaned up after each test using pytest fixtures.
+
+Database integration tests require a working PostgreSQL
+database with the application's schema and constraints.
