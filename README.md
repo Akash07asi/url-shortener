@@ -38,8 +38,11 @@ url-shortener/
 │   ├── test_short_code.py
 │   └── test_urls.py
 ├── docs/
+│   ├── architecture.md
+│   ├── api.md
 │   ├── database-design.md
 │   ├── development-log.md
+│   ├── security.md
 │   ├── short-code-generation.md
 │   └── troubleshooting.md
 ├── alembic.ini
@@ -47,6 +50,16 @@ url-shortener/
 ├── README.md
 └── .gitignore
 ```
+
+## Documentation
+
+- [Architecture](docs/architecture.md) — components and request flow
+- [API Reference](docs/api.md) — endpoints and responses
+- [Database Design](docs/database-design.md) — schema and constraints
+- [Security](docs/security.md) — protections and limitations
+- [Short-Code Generation](docs/short-code-generation.md) — generation and collision handling
+- [Development Log](docs/development-log.md) — project progress
+- [Troubleshooting](docs/troubleshooting.md) — common problems and fixes
 
 ## Database Schema
 
