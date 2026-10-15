@@ -15,6 +15,18 @@ A production-oriented URL shortener built with Python, FastAPI, and PostgreSQL.
 - Manage database schema changes with Alembic migrations
 - Return appropriate HTTP responses for redirects and unknown short codes
 
+## Architecture
+
+```text
+Client -> FastAPI -> PostgreSQL
+          |              ^
+          +-- Psycopg 3 -+
+
+Create URL: Validate -> Generate short code -> Store mapping -> Return response
+Redirect:   Lookup short code -> Return 307 redirect or 404
+Migrations: Alembic -> PostgreSQL schema
+```
+
 ## Tech Stack
 
 - Python
@@ -221,3 +233,57 @@ are cleaned up after each test using pytest fixtures.
 
 Database integration tests require a working PostgreSQL
 database with the application's schema and constraints.
+
+## Environment Configuration
+
+The application uses `DATABASE_URL` for PostgreSQL. If unset, it defaults to `postgresql:///url_shortener`.
+Set a custom connection string with `export DATABASE_URL="postgresql://USER:PASSWORD@localhost:5432/url_shortener"`.
+Use your own credentials and never commit real secrets.
+
+
+
+## Security
+
+- Pydantic validates URLs and supports HTTP and HTTPS.
+- Parameterized SQL helps prevent SQL injection.
+- Database constraints enforce short-code uniqueness and data integrity.
+- API errors must not expose database internals or credentials.
+
+Limitations: authentication, authorization, rate limiting, and destination blocklisting are not implemented. URL validation alone does not prevent malicious redirects.
+
+## Failure Handling
+
+- Invalid input is rejected by validation.
+- Unknown short codes return `404 Not Found`.
+- Short-code collisions are retried up to the configured limit.
+- Exhausted collision retries return `503 Service Unavailable`.
+- Database errors must not expose internal details.
+
+## Performance
+
+No performance benchmarks are documented. Measure latency, throughput, and capacity before making performance claims.
+
+## Deployment Status
+
+This project focuses on local API and database development. Docker deployment, CI/CD, production hosting, and monitoring must not be presented as implemented until verified.
+
+## Future Improvements
+
+- Rate limiting
+- Malicious-destination detection
+- Automated CI testing
+- Containerized deployment
+- Performance benchmarking
+- Structured logging and monitoring
+
+These are planned improvements, not existing features.
+
+## What I Learned
+
+- REST API design and HTTP responses
+- FastAPI and PostgreSQL integration using Psycopg 3
+- Connection pooling and database constraints
+- Collision handling and concurrent requests
+- Schema migrations with Alembic
+- API and failure testing with pytest
+- Architecture and security documentation
