@@ -3,6 +3,7 @@ import os
 import secrets
 import string
 
+from fastapi.middleware.cors import CORSMiddleware
 import psycopg
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
@@ -41,6 +42,14 @@ async def lifespan(app: FastAPI):
 
 # Creates the FastAPI application and manages the database pool lifecycle.
 app = FastAPI(lifespan=lifespan)
+
+# Allows the local frontend to call the deployed API from the browser.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5500"],
+    allow_methods=["GET", "POST"],
+    allow_headers=["Content-Type"],
+)
 
 # Validates incoming URL data before the application attempts to store it.
 class URLCreate(BaseModel):
