@@ -43,6 +43,8 @@ Migrations: Alembic -> PostgreSQL schema
 url-shortener/
 ├── app/
 │   └── main.py
+├── frontend/
+│   └── index.html
 ├── migrations/
 │   ├── versions/
 │   └── env.py
@@ -62,7 +64,6 @@ url-shortener/
 ├── README.md
 └── .gitignore
 ```
-
 ## Documentation
 
 - [Architecture](docs/architecture.md) — components and request flow
@@ -263,10 +264,28 @@ Limitations: authentication, authorization, rate limiting, and destination block
 
 No performance benchmarks are documented. Measure latency, throughput, and capacity before making performance claims.
 
-## Deployment Status
+## Deployment
 
-This project focuses on local API and database development. Docker deployment, CI/CD, production hosting, and monitoring must not be presented as implemented until verified.
+The application is deployed across three services:
 
+- **Frontend:** [Vercel](https://url-shortener-frontend-xi-eosin.vercel.app)
+- **Backend API:** [Render](https://url-shortener-api-o742.onrender.com)
+- **Database:** Neon PostgreSQL
+
+### Architecture
+
+```text
+Browser
+   |
+   v
+Vercel Frontend
+   |
+   v
+Render FastAPI API
+   |
+   v
+Neon PostgreSQL
+```
 ## Future Improvements
 
 - Rate limiting
