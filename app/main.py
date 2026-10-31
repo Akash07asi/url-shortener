@@ -43,10 +43,13 @@ async def lifespan(app: FastAPI):
 # Creates the FastAPI application and manages the database pool lifecycle.
 app = FastAPI(lifespan=lifespan)
 
-# Allows the local frontend to call the deployed API from the browser.
+# Allows local development and the deployed frontend to call the API.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5500"],
+    allow_origins=[
+        "http://localhost:5500",
+        "https://url-shortener-frontend-xi-eosin.vercel.app",
+    ],
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
 )
