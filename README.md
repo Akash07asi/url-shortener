@@ -116,7 +116,13 @@ postgresql:///url_shortener
 
 To use another database connection string, set `DATABASE_URL` in your environment.
 
-### 4. Run the application
+### 4. Apply database migrations
+
+```bash
+python -m alembic upgrade head
+```
+
+### 5. Run the application
 
 ```bash
 python -m uvicorn app.main:app --reload
